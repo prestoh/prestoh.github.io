@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>prestoh</title>
+<meta name="description" content="Auditor turning into an operator. Security operations, detection, home lab write-ups.">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   COLOURS — change these and the whole site follows
+   ═══════════════════════════════════════════════════════════════ */
+:root[data-theme="dark"] {
+  --bg:    #050507;   /* page background            */
+  --glow:  #1c1c3d;   /* indigo haze at the top     */
+  --text:  #ececf0;   /* body text                  */
+  --muted: #7e7e8c;   /* dates, captions, footer    */
+  --head:  #8b8ef5;   /* headings and links         */
+  --mark:  #f2c744;   /* gold highlight inside text */
+  --dim:   #3a3a48;   /* faded / inactive           */
+  --rule:  #23232e;   /* hairlines                  */
+  --pill:  #1a1a22;   /* tag + code background      */
+}
+:root[data-theme="light"] {
+  --bg: #f7f7f5; --glow: #dcdef7; --text: #16161a; --muted: #6c6c78;
+  --head: #4245c4; --mark: #97710a; --dim: #c4c4cf; --rule: #dededa; --pill: #e8e8e4;
+}
+
+/* ═══════════════ page frame ═══════════════ */
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 400 1rem/1.62 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  display: flex; flex-direction: column; min-height: 100vh;
+}
+body::before {            /* indigo gradient across the top */
+  content: ""; position: fixed; inset: 0 0 auto 0; height: 42vh; z-index: 0;
+  background: linear-gradient(to bottom, var(--glow), transparent); pointer-events: none;
+}
+body::after {             /* fine film grain */
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+.wrap {
+  position: relative; z-index: 1; flex: 1 0 auto; display: flex; gap: 2.5rem;
+  width: max-content; max-width: 100%; margin: 0 auto; padding: 6rem 2rem;
+}
+
+/* ═══════════════ sidebar ═══════════════ */
+.side { flex: 0 0 6.5rem; }
+.side nav { position: sticky; top: 6rem; display: flex; flex-direction: column; gap: .75rem; }
+.side a { color: var(--text); text-decoration: none; font-size: 1.05rem; width: max-content; }
+.side a:hover, .side a.on { color: var(--head); }
+.side button {
+  background: none; border: 0; padding: 0; margin-bottom: .5rem; line-height: 1;
+  color: var(--mark); font-size: 1.25rem; cursor: pointer; width: max-content;
+}
+
+/* ═══════════════ content ═══════════════ */
+.main { flex: 1 1 36rem; max-width: 36rem; min-width: 0; }
+.view { display: none; }          /* only the active page shows */
+.view.on { display: block; }
+
+.intro { display: flex; align-items: center; gap: 1.1rem; margin-bottom: 2.25rem; }
+.intro img { width: 6.5rem; height: 6.5rem; object-fit: cover; border-radius: 2px; flex: 0 0 auto; }
+.intro h1 { font-size: 2.1rem; font-weight: 600; margin: 0 0 .3rem; letter-spacing: -.015em; }
+.intro p { margin: 0; }
+
+h1.page { font-size: 1.9rem; font-weight: 600; margin: 0 0 2rem; letter-spacing: -.015em; }
+h2 { color: var(--head); font-size: 1.2rem; font-weight: 600; margin: 2.75rem 0 1rem; }
+p { margin: 0 0 1rem; }
+blockquote { margin: 0 0 1rem; padding-left: 1.5rem; font-style: italic; }
+b { color: var(--mark); font-weight: 600; }     /* gold highlight */
+a.link { color: var(--head); }
+
+.date { color: var(--muted); font-size: .88rem; font-weight: 600; margin-bottom: .1rem; }
+.item { margin-bottom: 1.35rem; }
+.item p { margin: 0 0 0 1rem; }
+.item p.date { margin-left: 0; }
+
+/* ═══════════════ project cards ═══════════════ */
+.project { display: flex; gap: 1.4rem; margin-bottom: 2.5rem; align-items: flex-start; }
+.project img { width: 13rem; height: 9rem; object-fit: cover; flex: 0 0 auto; border-radius: 2px; background: var(--pill); }
+.project h3 { font-size: 1.15rem; font-weight: 600; margin: 0 0 .6rem; line-height: 1.3; }
+.project h3 a { color: var(--text); text-decoration: none; }
+.project h3 a:hover { color: var(--head); }
+.project p { color: var(--muted); margin: .6rem 0 0; font-size: .95rem; }
+.tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+.tags span { background: var(--pill); color: var(--muted); font-size: .78rem; padding: .2rem .55rem; border-radius: 3px; }
+
+/* ═══════════════ write-ups ═══════════════ */
+.prose h1 { font-size: 1.85rem; font-weight: 600; margin: 0 0 .5rem; line-height: 1.2; }
+.prose h2 { margin: 2.25rem 0 .75rem; }
+.prose img { width: 100%; border-radius: 2px; margin: 1.5rem 0; }
+.prose pre {
+  background: var(--pill); border: 1px solid var(--rule); border-radius: 3px;
+  padding: .9rem 1rem; overflow-x: auto;
+  font: .82rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.prose code { font: .88em ui-monospace, SFMono-Regular, Menlo, monospace; }
+.prose blockquote { border-left: 2px solid var(--head); padding-left: 1.25rem; color: var(--muted); font-style: italic; }
+.back { color: var(--muted); text-decoration: none; font-size: .92rem; }
+.back:hover { color: var(--head); }
+
+/* ═══════════════ signal trace ═══════════════ */
+.trace { margin: 1.25rem 0 0; }
+#sig { width: 100%; height: 230px; display: block; touch-action: none; cursor: ns-resize; }
+#sig .wave { fill: none; stroke: var(--dim); stroke-width: 1.5; }
+#sig .thresh { stroke: var(--head); stroke-width: 1.5; stroke-dasharray: 5 4; }
+#sig .grab { fill: var(--head); }
+#sig .peak-on { fill: var(--mark); }
+#sig .peak-off { fill: var(--dim); }
+#sig text { font: 11px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; }
+#sig .lab-on { fill: var(--text); }
+#sig .lab-off { fill: var(--dim); }
+#sig .readout { fill: var(--muted); font-size: 11px; }
+.trace-hint { text-align: center; color: var(--muted); font-size: .9rem; margin: .5rem 0 0; }
+
+/* ═══════════════ footer ═══════════════ */
+footer {
+  position: relative; z-index: 1; flex: 0 0 auto; border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  padding: 1.1rem 2.5rem; font-size: .95rem; color: var(--muted);
+}
+footer a { color: var(--muted); }
+
+/* ═══════════════ phones ═══════════════ */
+@media (max-width: 700px) {
+  .wrap { width: auto; flex-direction: column; gap: 1.75rem; padding: 2.5rem 1.25rem 4rem; }
+  .side nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 1.1rem; align-items: center; }
+  .side button { margin: 0; }
+  .intro { flex-direction: column; align-items: flex-start; }
+  .project { flex-direction: column; gap: .9rem; }
+  .project img { width: 100%; height: 11rem; }
+  footer { padding: 1.1rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="side">
+    <nav>
+      <button id="tbtn" onclick="toggleTheme()" title="Toggle theme">&#9728;</button>
+      <a href="#home">Home</a>
+      <a href="#projects">Projects</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+
+
+  <!-- ╔═══════════════════════════════════════════════════════════╗
+       ║  HOW THIS FILE WORKS                                       ║
+       ║                                                            ║
+       ║  Each page is a <section class="view" id="something">.     ║
+       ║  Only one shows at a time. Links use #something to switch. ║
+       ║  Everything lives in this one file — nothing else to        ║
+       ║  upload, nothing that can break.                            ║
+       ╚═══════════════════════════════════════════════════════════╝ -->
+
+
+  <!-- ═════════════════════════════════════════════════════════════
+       PAGE: HOME
+       ═════════════════════════════════════════════════════════════ -->
+  <section class="view on" id="home">
+
+    <!-- The img pulls your GitHub avatar automatically.
+         Own photo: upload it to the repo, change src to "me.jpg"
+         No photo:  delete the <img> line -->
+    <div class="intro">
+      <img src="https://github.com/prestoh.png" alt="">
+      <div>
+        <h1>Hi, Preston here</h1>
+        <p>Auditor turning into an operator</p>
+      </div>
+    </div>
+
+    <h2>A bit about myself</h2>
+
+    <blockquote>
+      Spent two years checking whether controls worked. Now I want to run them.
+    </blockquote>
+
+    <p>
+      Audit taught me what good looks like on paper. This is where I close the gap
+      between the paper and the terminal. Below is roughly what I spend my time on,
+      plotted as a signal — <b>drag the threshold</b> and watch what you catch versus
+      what slips past. That tradeoff is most of the job.
+    </p>
+
+    <div class="trace">
+      <svg id="sig" aria-hidden="true"></svg>
+      <p class="trace-hint">Drag the dashed line</p>
+    </div>
+
+    <!-- ─── ADD A BACKGROUND ENTRY ───────────────────────────────
+         Copy one <div class="item"> block. Newest on top.
+         Wrap any phrase in <b></b> to make it gold. -->
+    <h2>Technical background</h2>
+
+    <div class="item">
+      <p class="date">[August 2025 - present]</p>
+      <p>
+        Technology risk analyst at a <b>Big Four</b> firm. IT general controls testing
+        and <b>SOC reporting</b> for enterprise clients. Built internal tooling in
+        <b>Python</b> to automate evidence collection and reporting.
+      </p>
+    </div>
+
+    <div class="item">
+      <p class="date">[2024 - 2025]</p>
+      <p>
+        Data consultant at a university research institute, doing <b>SQL</b> and
+        <b>Power BI</b> reporting for industry partners.
+      </p>
+    </div>
+
+    <div class="item">
+      <p class="date">[In progress]</p>
+      <p>Working through <b>Security+</b> and <b>CISA</b>.</p>
+    </div>
+
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════
+       PAGE: PROJECTS
+
+       ADD A PROJECT:
+         1. Copy one <article class="project"> block, paste at the top
+         2. Change the two href values to match a new write-up id
+         3. Change title, tags, description
+         4. Copy the write-up section further down and give it that id
+
+       IMAGES: upload the file to the repo, then use src="myphoto.jpg"
+       ═════════════════════════════════════════════════════════════ -->
+  <section class="view" id="projects">
+
+    <h1 class="page">Projects</h1>
+
+    <article class="project">
+      <a href="#detection-lab">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 220'%3E%3Crect width='320' height='220' fill='%231a1a22'/%3E%3Ctext x='160' y='114' fill='%23555' font-family='monospace' font-size='13' text-anchor='middle'%3Eyour image here%3C/text%3E%3C/svg%3E" alt="">
+      </a>
+      <div>
+        <h3><a href="#detection-lab">Building a detection lab that actually catches things</a></h3>
+        <div class="tags">
+          <span>#detection</span><span>#ELK</span><span>#Sysmon</span>
+        </div>
+        <p>
+          Wiring Sysmon, Zeek and an ELK stack together on spare hardware, then
+          writing rules against real attack simulations to see what holds up.
+        </p>
+      </div>
+    </article>
+
+    <article class="project">
+      <a href="#second-project">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 220'%3E%3Crect width='320' height='220' fill='%231a1a22'/%3E%3Ctext x='160' y='114' fill='%23555' font-family='monospace' font-size='13' text-anchor='middle'%3Eyour image here%3C/text%3E%3C/svg%3E" alt="">
+      </a>
+      <div>
+        <h3><a href="#second-project">Your next project goes here</a></h3>
+        <div class="tags">
+          <span>#python</span><span>#automation</span>
+        </div>
+        <p>
+          Two or three lines on what it is and why it was worth building. Save the
+          detail for the write-up itself.
+        </p>
+      </div>
+    </article>
+
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════
+       WRITE-UP: detection-lab
+
+       ADD A WRITE-UP: copy this whole <section> block, change the id
+       to something new, and point a project card at that same id.
+
+       TAGS YOU CAN USE:
+         <b>gold text</b>              highlight a phrase
+         <h2>Heading</h2>              periwinkle section heading
+         <pre><code>...</code></pre>   code block
+         <blockquote>...</blockquote>  pull quote
+         <img src="pic.jpg" alt="">    full-width image
+         <a class="link" href="">      a link
+       ═════════════════════════════════════════════════════════════ -->
+  <section class="view prose" id="detection-lab">
+
+    <p class="date">[March 2026]</p>
+    <h1>Building a detection lab that actually catches things</h1>
+
+    <p>
+      One or two sentences framing what you built and why anyone should care.
+      Easier to write once the rest exists, so come back to this last.
+    </p>
+
+    <h2>Why I built it</h2>
+    <p>
+      Start with the problem, not the tooling. What did you not understand before
+      you started? A reader decides in about ten seconds whether to keep going, and
+      <b>curiosity reads better than a spec</b>.
+    </p>
+
+    <h2>How it works</h2>
+    <p>Walk through the approach. Use a code block where it earns its place:</p>
+
+<pre><code>title: Suspicious PowerShell Encoded Command
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains: '-enc'
+  condition: selection
+level: high</code></pre>
+
+    <h2>What went wrong</h2>
+    <p>
+      The section most people skip, and the one that carries the most weight with
+      anyone technical. False positives, dead ends, the assumption that turned out
+      to be wrong. Nobody believes a project that went perfectly.
+    </p>
+
+    <blockquote>Pull out the one finding worth remembering.</blockquote>
+
+    <h2>What I'd do differently</h2>
+    <p>Close on what you learned rather than restating what you already said.</p>
+
+    <p style="margin-top:2.5rem"><a class="back" href="#projects">&larr; Back to projects</a></p>
+
+  </section>
+
+
+  <!-- ═════════════════ WRITE-UP: second-project ═════════════════ -->
+  <section class="view prose" id="second-project">
+
+    <p class="date">[Date]</p>
+    <h1>Your next project goes here</h1>
+
+    <p>Replace all of this with the real post.</p>
+
+    <p style="margin-top:2.5rem"><a class="back" href="#projects">&larr; Back to projects</a></p>
+
+  </section>
+
+
+  </main>
+</div>
+
+<footer>
+  <span><a href="mailto:preston@prestoh.dev">Email</a> | <a href="https://github.com/prestoh">GitHub</a></span>
+  <span>Still mostly reading the logs</span>
+</footer>
+
+
+<script>
+/* ═══════════════ THEME TOGGLE ═══════════════ */
+function toggleTheme() {
+  var r = document.documentElement;
+  var next = r.dataset.theme === 'dark' ? 'light' : 'dark';
+  r.dataset.theme = next;
+  localStorage.setItem('theme', next);
+  document.getElementById('tbtn').innerHTML = next === 'dark' ? '&#9728;' : '&#9790;';
+}
+if (localStorage.getItem('theme') === 'light') toggleTheme();
+
+
+/* ═══════════════ PAGE SWITCHING ═══════════════
+   Shows the section whose id matches the #hash in the URL.
+   Back button and shareable links both work. */
+function route() {
+  var id = location.hash.slice(1) || 'home';
+  var target = document.getElementById(id);
+  if (!target || !target.classList.contains('view')) { target = document.getElementById('home'); id = 'home'; }
+
+  document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('on'); });
+  target.classList.add('on');
+
+  document.querySelectorAll('.side a').forEach(function (a) {
+    a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+  });
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+route();
+
+
+/* ═══════════════ SIGNAL TRACE ═══════════════
+   ADD OR CHANGE AN INTEREST: edit the list below.
+     label — text shown at the peak
+     x     — position across the panel, 0 to 760. Space them out.
+     amp   — spike height, 0 to 170. Taller spikes get caught more
+             easily, so put strong skills high and new ones low. */
+var SIGNALS = [
+  { label: 'Detection',      x:  80, amp: 128 },
+  { label: 'Packets',        x: 205, amp:  92 },
+  { label: 'OT/ICS',         x: 330, amp: 150 },
+  { label: 'Scripting',      x: 445, amp:  58 },
+  { label: 'Threat hunting', x: 575, amp: 116 },
+  { label: 'Home lab',       x: 690, amp:  76 }
+];
+/* ─── nothing below here needs editing ─────────────────────── */
+
+var W = 760, H = 230, BASE = 196;
+var svg = document.getElementById('sig');
+var NS = 'http://www.w3.org/2000/svg';
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+function make(tag, cls) {
+  var e = document.createElementNS(NS, tag);
+  if (cls) e.setAttribute('class', cls);
+  svg.appendChild(e);
+  return e;
+}
+function jitter(x) {
+  var s = Math.sin(x * 12.9898) * 43758.5453;
+  return (s - Math.floor(s) - 0.5) * 7;
+}
+
+var pts = [];
+for (var x = 0; x <= W; x += 3) {
+  var y = BASE + jitter(x);
+  for (var i = 0; i < SIGNALS.length; i++) {
+    var d = x - SIGNALS[i].x;
+    y -= SIGNALS[i].amp * Math.exp(-(d * d) / 620);
+  }
+  pts.push(x + ',' + y.toFixed(1));
+}
+make('polyline', 'wave').setAttribute('points', pts.join(' '));
+
+var peaks = SIGNALS.map(function (s) {
+  var dot = make('circle');
+  dot.setAttribute('cx', s.x); dot.setAttribute('cy', BASE - s.amp); dot.setAttribute('r', 4.5);
+  var lab = make('text');
+  lab.textContent = s.label;
+  lab.setAttribute('x', s.x); lab.setAttribute('y', BASE - s.amp - 12);
+  lab.setAttribute('text-anchor', 'middle');
+  return { dot: dot, lab: lab, s: s };
+});
+
+var line = make('line', 'thresh');
+var handle = make('circle', 'grab');
+handle.setAttribute('r', 5); handle.setAttribute('cx', W - 8);
+var readout = make('text', 'readout');
+readout.setAttribute('x', 4);
+
+var ty = BASE - 88;
+
+function render() {
+  line.setAttribute('x1', 0); line.setAttribute('y1', ty);
+  line.setAttribute('x2', W); line.setAttribute('y2', ty);
+  handle.setAttribute('cy', ty);
+  readout.setAttribute('y', ty - 7);
+  var hits = 0;
+  peaks.forEach(function (p) {
+    var on = (BASE - p.s.amp) < ty;
+    if (on) hits++;
+    p.dot.setAttribute('class', on ? 'peak-on' : 'peak-off');
+    p.lab.setAttribute('class', on ? 'lab-on' : 'lab-off');
+  });
+  readout.textContent = hits + ' of ' + SIGNALS.length + ' detected';
+}
+render();
+
+var dragging = false;
+function setFromEvent(e) {
+  var box = svg.getBoundingClientRect();
+  ty = (e.clientY - box.top) / box.height * H;
+  ty = Math.max(20, Math.min(BASE - 4, ty));
+  render();
+}
+svg.addEventListener('pointerdown', function (e) {
+  dragging = true; svg.setPointerCapture(e.pointerId); setFromEvent(e);
+});
+svg.addEventListener('pointermove',   function (e) { if (dragging) setFromEvent(e); });
+svg.addEventListener('pointerup',     function () { dragging = false; });
+svg.addEventListener('pointercancel', function () { dragging = false; });
+</script>
+
+</body>
+</html>
