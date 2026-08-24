@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project title — prestoh</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="mark" href="../index.html">prestoh</a>
+  <nav class="nav">
+    <a href="../index.html#projects">All projects</a>
+  </nav>
+  <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme">
+    <span class="toggle-dot" aria-hidden="true"></span>
+    <span class="toggle-label">Dark</span>
+  </button>
+</header>
+
+<article class="prose">
+
+  <p class="field">Home lab · March 2026</p>
+  <h1>Your project title goes here</h1>
+
+  <p class="lede">
+    One or two sentences framing what you built and why anyone should care.
+    Write this last — it is easier once the rest exists.
+  </p>
+
+  <h2>Why I built it</h2>
+  <p>
+    Start with the problem, not the tooling. What did you not understand
+    before you started? What made you want to find out?
+  </p>
+
+  <h2>How it works</h2>
+  <p>
+    Walk through the approach. Use code blocks where they earn their place:
+  </p>
+
+<pre><code>title: Suspicious PowerShell Encoded Command
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains: '-enc'
+  condition: selection
+level: high</code></pre>
+
+  <h2>What went wrong</h2>
+  <p>
+    This is the section most people skip and the one that carries the most
+    weight with anyone technical reading it. Dead ends, false positives,
+    the assumption that turned out to be wrong. Nobody believes a project
+    that went perfectly.
+  </p>
+
+  <blockquote>
+    Pull out a finding worth remembering here.
+  </blockquote>
+
+  <h2>What I'd do differently</h2>
+  <p>
+    Close on what you learned rather than a summary of what you already said.
+  </p>
+
+  <p style="margin-top:3rem"><a class="back" href="../index.html#projects">&larr; Back to projects</a></p>
+
+</article>
+
+<script src="../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>prestoh</title>
+<meta name="description" content="Security operations, detection engineering, and things I build to understand how they break.">
+
+<!-- Swap these for self-hosted .woff2 files in assets/fonts/ before you go live.
+     See README.md — it takes five minutes and removes a third-party request. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="mark" href="/">prestoh</a>
+  <nav class="nav">
+    <a href="#background">Background</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme">
+    <span class="toggle-dot" aria-hidden="true"></span>
+    <span class="toggle-label">Dark</span>
+  </button>
+</header>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <p class="field">Currently</p>
+    <h1>
+      I spent two years<br>
+      <em>checking</em> whether controls worked.<br>
+      Now I want to <em>run</em> them.
+    </h1>
+    <p class="lede">
+      IT audit and assurance taught me what good looks like on paper. This
+      site is where I close the gap between the paper and the terminal —
+      home lab builds, detection experiments, and write-ups of things I broke
+      on purpose.
+    </p>
+
+    <!-- ===== SIGNATURE ELEMENT =====
+         Drag the chips around. They leave a trace behind them.
+         Add or remove <button class="chip"> elements freely. -->
+    <div class="trace-surface" id="trace">
+      <canvas id="trace-canvas" aria-hidden="true"></canvas>
+      <p class="trace-hint field">Drag these — they leave a trail</p>
+      <div class="chips" id="chips">
+        <button class="chip" type="button">detection engineering</button>
+        <button class="chip" type="button">Sigma rules</button>
+        <button class="chip" type="button">OT/ICS</button>
+        <button class="chip" type="button">Python</button>
+        <button class="chip" type="button">log pipelines</button>
+        <button class="chip" type="button">threat hunting</button>
+        <button class="chip" type="button">SOC 2</button>
+        <button class="chip" type="button">home lab</button>
+        <button class="chip" type="button">Zeek</button>
+        <button class="chip" type="button">packet analysis</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BACKGROUND ============ -->
+  <section id="background" class="section">
+    <h2 class="section-title">Background</h2>
+
+    <ol class="timeline">
+      <li>
+        <p class="field">2025 — present</p>
+        <h3>Technology Risk Analyst</h3>
+        <p>
+          Big Four professional services firm. IT general controls testing and
+          SOC reporting for large enterprise clients. Built internal tooling in
+          Python to automate evidence collection and reporting workflows.
+        </p>
+      </li>
+      <li>
+        <p class="field">2024 — 2025</p>
+        <h3>Data Consultant</h3>
+        <p>
+          University research institute. SQL and Power BI work supporting
+          reporting for industry partners.
+        </p>
+      </li>
+      <li>
+        <p class="field">In progress</p>
+        <h3>Security+ · CISA</h3>
+        <p>
+          Working through both. Notes and study write-ups land in the projects
+          section as I go.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section id="projects" class="section">
+    <h2 class="section-title">Projects</h2>
+    <p class="section-note">
+      Write-ups, including the parts that did not work.
+    </p>
+
+    <div class="cards">
+
+      <article class="card">
+        <a class="card-media" href="writeups/detection-lab.html">
+          <img src="assets/img/placeholder-1.svg" alt="">
+        </a>
+        <div class="card-body">
+          <p class="field">Home lab</p>
+          <h3><a href="writeups/detection-lab.html">Building a detection lab that actually catches things</a></h3>
+          <p>
+            Wiring Sysmon, Zeek, and an ELK stack together on spare hardware,
+            then writing rules against real attack simulations.
+          </p>
+          <p class="tags">#detection #ELK #Sysmon</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <a class="card-media" href="writeups/example.html">
+          <img src="assets/img/placeholder-2.svg" alt="">
+        </a>
+        <div class="card-body">
+          <p class="field">Tooling</p>
+          <h3><a href="writeups/example.html">Your second project goes here</a></h3>
+          <p>
+            Copy writeups/example.html, rename it, and change this card. That is
+            the whole workflow.
+          </p>
+          <p class="tags">#python #automation</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="section">
+    <h2 class="section-title">Contact</h2>
+    <p class="lede">
+      Happy to talk about detection work, OT security, or anything in the
+      projects above.
+    </p>
+    <ul class="links">
+      <li><a href="mailto:preston@prestoh.dev">preston@prestoh.dev</a></li>
+      <li><a href="https://github.com/prestoh">github.com/prestoh</a></li>
+      <li><a href="#">LinkedIn</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p class="field">Built by hand. No framework, no tracker.</p>
+</footer>
+
+<script src="assets/main.js"></script>
+</body>
+</html>
